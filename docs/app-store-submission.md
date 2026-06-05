@@ -3,7 +3,7 @@
 **Bundle ID:** xca-consult.WeightTracker  
 **Version:** 1.0 (build 1)  
 **Deployment target:** iOS 17.0  
-**Devices:** iPhone + iPad (TARGETED_DEVICE_FAMILY = 1,2)
+**Devices:** iPhone only (TARGETED_DEVICE_FAMILY = 1)
 
 ---
 
@@ -41,12 +41,10 @@ Copy the description and keywords from [app-store-description.md](app-store-desc
 
 See [screenshots-workflow.md](screenshots-workflow.md) for the full process.
 
-Required sizes:
-- **6.9" display** (iPhone 16 Pro Max) — mandatory
-- **6.5" display** (iPhone 14 Plus / 15 Plus) — or Apple auto-scales from 6.9"
-- iPad 13" Pro — only needed if you want iPad-specific screenshots
+Required size:
+- **6.9" display** (iPhone 17) — mandatory
 
-At least 1 screenshot per size; up to 10.
+At least 1 screenshot; up to 10.
 
 ---
 
