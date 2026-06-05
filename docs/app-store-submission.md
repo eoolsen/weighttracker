@@ -42,8 +42,8 @@ Fill in the following under the App Store listing:
 | Subtitle | Track weight & BMI goals |
 | Category | Health & Fitness |
 | Secondary category | (optional) |
-| Support URL | your website or GitHub Pages URL |
-| Privacy Policy URL | required — see `privacy-policy.md` guidance below |
+| Support URL | `https://eoolsen.github.io/weighttracker/privacy-policy/` |
+| Privacy Policy URL | `https://eoolsen.github.io/weighttracker/privacy-policy/` |
 
 Copy the description and keywords from [app-store-description.md](app-store-description.md).
 
@@ -54,7 +54,9 @@ Copy the description and keywords from [app-store-description.md](app-store-desc
 See [screenshots-workflow.md](screenshots-workflow.md) for the full process.
 
 Required size:
-- **6.9" display** (iPhone 17) — mandatory
+- **6.9" display** — 1320×2868 px — mandatory
+- Simulator to use: **iPhone 16 Pro Max** or **iPhone 17 Pro Max**
+- ⚠️ iPhone 16 Pro (6.3") screenshots at 1206×2622 will be rejected — wrong slot
 
 At least 1 screenshot; up to 10.
 
