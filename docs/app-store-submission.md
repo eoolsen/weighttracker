@@ -1,20 +1,32 @@
 # App Store Submission — weighttracker.io
 
-**Bundle ID:** xca-consult.WeightTracker  
+**Bundle ID:** com.erikolsen.WeightTracker  
 **Version:** 1.0 (build 1)  
 **Deployment target:** iOS 17.0  
 **Devices:** iPhone only (TARGETED_DEVICE_FAMILY = 1)
 
 ---
 
-## 1. App Store Connect Setup
+## 1. Register Bundle ID & Create App Record
+
+### 1a. Register the Bundle ID (one-time)
+
+1. Go to [developer.apple.com/account/resources/identifiers/list](https://developer.apple.com/account/resources/identifiers/list)
+2. Click **+** → choose **App IDs** → **App** → Continue
+3. Fill in:
+   - Description: `WeightTracker`
+   - Bundle ID: **Explicit** → `com.erikolsen.WeightTracker`
+   - Capabilities: enable **HealthKit** if you plan to read health data; otherwise leave defaults
+4. Continue → Register
+
+### 1b. Create the App in App Store Connect
 
 1. Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com)
 2. My Apps → **+** → New App
    - Platform: iOS
    - Name: **weighttracker.io**
    - Primary language: English
-   - Bundle ID: `xca-consult.WeightTracker`
+   - Bundle ID: `com.erikolsen.WeightTracker` *(select from dropdown — it appears after step 1a)*
    - SKU: `weighttracker-io-1` (or anything unique to you)
 3. Save — this creates the listing shell
 
