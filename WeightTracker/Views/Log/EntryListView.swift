@@ -7,6 +7,7 @@ struct EntryListView: View {
 
     @State private var showingAddSheet = false
     @State private var selectedEntry: WeightEntry?
+    @State private var entryToDelete: WeightEntry?
 
     var body: some View {
         NavigationStack {
@@ -23,8 +24,14 @@ struct EntryListView: View {
                             EntryRowView(entry: entry)
                                 .contentShape(Rectangle())
                                 .onTapGesture { selectedEntry = entry }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        entryToDelete = entry
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
-                        .onDelete(perform: delete)
                     }
                 }
             }
@@ -44,12 +51,24 @@ struct EntryListView: View {
             .sheet(item: $selectedEntry) { entry in
                 EntryFormView(entry: entry)
             }
-        }
-    }
-
-    private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(entries[index])
+            .alert(
+                "Delete Entry?",
+                isPresented: .init(
+                    get: { entryToDelete != nil },
+                    set: { if !$0 { entryToDelete = nil } }
+                ),
+                presenting: entryToDelete
+            ) { entry in
+                Button("Delete", role: .destructive) {
+                    modelContext.delete(entry)
+                    entryToDelete = nil
+                }
+                Button("Cancel", role: .cancel) {
+                    entryToDelete = nil
+                }
+            } message: { entry in
+                Text("\(entry.date.formatted_medium) — \(String(format: "%.1f kg", entry.weightKg))")
+            }
         }
     }
 }
