@@ -56,11 +56,7 @@ struct EntryFormView: View {
             }
             .navigationTitle(isEditing ? "Edit Entry" : "Add Entry")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .keyboard) {
-                    Button("Done") { weightFocused = false }
-                }
-            }
+
             .onAppear {
                 if let entry {
                     date = entry.date
