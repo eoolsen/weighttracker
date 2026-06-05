@@ -13,6 +13,8 @@ struct ChartsTabView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
+                    GoalProgressView(data: viewModel.goalProgress)
+
                     WeightLineChart(
                         entries: viewModel.weightSeries,
                         goalKg: settings?.goalWeightKg
@@ -22,8 +24,6 @@ struct ChartsTabView: View {
                         bmiSeries: viewModel.bmiSeries,
                         hasSettings: settings != nil && settings!.heightMeters > 0
                     )
-
-                    GoalProgressView(data: viewModel.goalProgress)
                 }
                 .padding()
             }
