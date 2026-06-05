@@ -37,19 +37,21 @@ struct EntryFormView: View {
                 }
 
                 Section {
-                    Button(action: save) {
-                        Text("Save")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(weightText.trimmingCharacters(in: .whitespaces).isEmpty)
+                    HStack(spacing: 12) {
+                        Button(action: { dismiss() }) {
+                            Text("Cancel")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.red)
 
-                    Button(action: { dismiss() }) {
-                        Text("Cancel")
-                            .frame(maxWidth: .infinity)
+                        Button(action: save) {
+                            Text("Save")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(weightText.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.red)
                 }
             }
             .navigationTitle(isEditing ? "Edit Entry" : "Add Entry")
