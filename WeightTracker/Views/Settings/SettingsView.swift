@@ -33,12 +33,17 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Button("Save") { save() }
-                        .disabled(!isValid)
+                    Button(action: save) {
+                        Text("Save")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!isValid)
 
                     if saved {
                         Label("Saved", systemImage: "checkmark.circle.fill")
                             .foregroundStyle(.green)
+                            .frame(maxWidth: .infinity)
                     }
                 }
             }
