@@ -53,11 +53,6 @@ struct BMIChart: View {
                         RuleMark(y: .value(cat.label, cat.value))
                             .foregroundStyle(cat.color.opacity(0.6))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
-                            .annotation(position: .trailing, alignment: .leading) {
-                                Text(cat.label)
-                                    .font(.caption2)
-                                    .foregroundStyle(cat.color)
-                            }
                     }
                 }
                 .chartYScale(domain: yDomain)

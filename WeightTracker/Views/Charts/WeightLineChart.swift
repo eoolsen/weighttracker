@@ -45,11 +45,6 @@ struct WeightLineChart: View {
                         RuleMark(y: .value("Goal", goal))
                             .foregroundStyle(.green)
                             .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [6]))
-                            .annotation(position: .trailing, alignment: .leading) {
-                                Text("Goal")
-                                    .font(.caption2)
-                                    .foregroundStyle(.green)
-                            }
                     }
                 }
                 .chartYScale(domain: yDomain)
