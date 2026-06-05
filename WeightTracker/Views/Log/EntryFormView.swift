@@ -35,17 +35,26 @@ struct EntryFormView: View {
                             .foregroundStyle(.red)
                     }
                 }
+
+                Section {
+                    Button(action: save) {
+                        Text("Save")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(weightText.trimmingCharacters(in: .whitespaces).isEmpty)
+
+                    Button(action: { dismiss() }) {
+                        Text("Cancel")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+                }
             }
             .navigationTitle(isEditing ? "Edit Entry" : "Add Entry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save() }
-                        .disabled(weightText.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
                 ToolbarItem(placement: .keyboard) {
                     Button("Done") { weightFocused = false }
                 }
