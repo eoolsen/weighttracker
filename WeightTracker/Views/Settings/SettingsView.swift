@@ -19,7 +19,7 @@ struct SettingsView: View {
 
     private static func defaultReminderTime() -> Date {
         var c = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-        c.hour = 20; c.minute = 0
+        c.hour = 22; c.minute = 0
         return Calendar.current.date(from: c) ?? .now
     }
 
@@ -33,7 +33,7 @@ struct SettingsView: View {
                     HStack {
                         TextField("Height", text: $heightText)
                             .keyboardType(.decimalPad)
-                        Text("m")
+                        Text("cm")
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -109,7 +109,7 @@ struct SettingsView: View {
 
     private func loadFromSettings() {
         if let s = settings {
-            heightText = String(format: "%.2f", s.heightMeters)
+            heightText = String(format: "%.0f", s.heightMeters * 100)
             goalText = String(format: "%.1f", s.goalWeightKg)
             notificationsEnabled = s.notificationsEnabled
             logDays = Set(s.logDays)
@@ -120,7 +120,8 @@ struct SettingsView: View {
     }
 
     private func save() {
-        guard let h = parseDouble(heightText), let g = parseDouble(goalText) else { return }
+        guard let hCm = parseDouble(heightText), let g = parseDouble(goalText) else { return }
+        let h = hCm / 100
         if let existing = settings {
             existing.heightMeters = h
             existing.goalWeightKg = g

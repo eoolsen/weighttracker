@@ -15,7 +15,7 @@ final class UserSettings {
         goalWeightKg: Double = 75.0,
         notificationsEnabled: Bool = false,
         logDays: [Int] = [],
-        reminderHour: Int = 20,
+        reminderHour: Int = 22,
         reminderMinute: Int = 0
     ) {
         self.heightMeters = heightMeters
