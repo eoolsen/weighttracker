@@ -80,6 +80,7 @@ struct EntryFormView: View {
             let newEntry = WeightEntry(date: date, weightKg: kg)
             modelContext.insert(newEntry)
         }
+        cancelTodayReminder()
         dismiss()
     }
 }

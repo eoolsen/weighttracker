@@ -9,6 +9,12 @@ struct EntryListView: View {
     @State private var selectedEntry: WeightEntry?
     @State private var entryToDelete: WeightEntry?
 
+    private var shareText: String {
+        let sorted = entries.sorted { $0.date < $1.date }
+        let rows = sorted.map { "\($0.date.formatted_medium)\t\(String(format: "%.1f kg", $0.weightKg))" }
+        return (["weighttracker.io — Weight Log", ""] + rows).joined(separator: "\n")
+    }
+
     var body: some View {
         NavigationStack {
             Group {
@@ -43,6 +49,12 @@ struct EntryListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                }
+                ToolbarItem(placement: .secondaryAction) {
+                    ShareLink(item: shareText) {
+                        Label("Share Log", systemImage: "square.and.arrow.up")
+                    }
+                    .disabled(entries.isEmpty)
                 }
             }
             .sheet(isPresented: $showingAddSheet) {

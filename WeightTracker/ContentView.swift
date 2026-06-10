@@ -8,6 +8,11 @@ struct ContentView: View {
                     Label("Log", systemImage: "list.bullet")
                 }
 
+            StatsView()
+                .tabItem {
+                    Label("Stats", systemImage: "chart.bar.xaxis")
+                }
+
             ChartsTabView()
                 .tabItem {
                     Label("Charts", systemImage: "chart.line.uptrend.xyaxis")
