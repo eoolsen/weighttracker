@@ -8,6 +8,8 @@ struct SettingsView: View {
     @State private var heightText: String = ""
     @State private var goalText: String = ""
     @State private var saved = false
+    @FocusState private var focusedField: Field?
+    private enum Field { case height, goal }
 
     // Notification UI state
     @State private var notificationsEnabled: Bool = false
@@ -33,6 +35,7 @@ struct SettingsView: View {
                     HStack {
                         TextField("Height", text: $heightText)
                             .keyboardType(.decimalPad)
+                            .focused($focusedField, equals: .height)
                         Text("cm")
                             .foregroundStyle(.secondary)
                     }
@@ -42,6 +45,7 @@ struct SettingsView: View {
                     HStack {
                         TextField("Target weight", text: $goalText)
                             .keyboardType(.decimalPad)
+                            .focused($focusedField, equals: .goal)
                         Text("kg")
                             .foregroundStyle(.secondary)
                     }
@@ -120,6 +124,7 @@ struct SettingsView: View {
     }
 
     private func save() {
+        focusedField = nil
         guard let hCm = parseDouble(heightText), let g = parseDouble(goalText) else { return }
         let h = hCm / 100
         if let existing = settings {
