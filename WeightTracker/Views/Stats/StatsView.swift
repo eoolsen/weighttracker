@@ -14,7 +14,7 @@ struct StatsView: View {
         let sorted = entries.sorted { $0.date < $1.date }
         if let first = sorted.first, let last = sorted.last {
             lines.append(String(format: "• Started: %.1f kg  Current: %.1f kg  Goal: %.1f kg",
-                                first.weightKg, last.weightKg, settings?.goalWeightKg ?? 0))
+                                first.weightKg, last.weightKg, settings?.goalWeightKg ?? 0.0))
         }
         if let change = viewModel.totalChange {
             let verb = change <= 0 ? "Lost" : "Gained"
