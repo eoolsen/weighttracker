@@ -169,7 +169,7 @@ struct SettingsView: View {
         s.reminderHour = Calendar.current.component(.hour, from: reminderTime)
         s.reminderMinute = Calendar.current.component(.minute, from: reminderTime)
         if notificationsEnabled {
-            scheduleReminders(logDays: s.logDays, hour: s.reminderHour, minute: s.reminderMinute)
+            scheduleReminders(logDays: Array(logDays), hour: s.reminderHour, minute: s.reminderMinute)
         }
     }
 
