@@ -112,7 +112,7 @@ struct SettingsView: View {
             heightText = String(format: "%.0f", s.heightMeters * 100)
             goalText = String(format: "%.1f", s.goalWeightKg)
             notificationsEnabled = s.notificationsEnabled
-            logDays = Set(s.logDays)
+            logDays = s.logDaysSet
             var c = Calendar.current.dateComponents([.year, .month, .day], from: .now)
             c.hour = s.reminderHour; c.minute = s.reminderMinute
             reminderTime = Calendar.current.date(from: c) ?? reminderTime
@@ -128,14 +128,15 @@ struct SettingsView: View {
         } else {
             let hour = Calendar.current.component(.hour, from: reminderTime)
             let minute = Calendar.current.component(.minute, from: reminderTime)
-            modelContext.insert(UserSettings(
+            let newSettings = UserSettings(
                 heightMeters: h,
                 goalWeightKg: g,
                 notificationsEnabled: notificationsEnabled,
-                logDays: Array(logDays),
                 reminderHour: hour,
                 reminderMinute: minute
-            ))
+            )
+            newSettings.logDaysSet = logDays
+            modelContext.insert(newSettings)
         }
         saved = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saved = false }
@@ -164,7 +165,7 @@ struct SettingsView: View {
 
     private func saveNotificationSettings() {
         guard let s = settings else { return }
-        s.logDays = Array(logDays)
+        s.logDaysSet = logDays
         s.reminderHour = Calendar.current.component(.hour, from: reminderTime)
         s.reminderMinute = Calendar.current.component(.minute, from: reminderTime)
         if notificationsEnabled {
