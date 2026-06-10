@@ -18,38 +18,44 @@ There are no test targets and no lint configuration.
 
 ## Architecture
 
-SwiftUI + SwiftData app with three tabs (Log, Charts, Settings). All data is stored locally on device — no networking.
+SwiftUI + SwiftData app with four tabs (Log, Stats, Charts, Settings). All data is stored locally on device — no networking.
 
 ### Data layer
 
 Two `@Model` classes persisted by SwiftData, registered in `WeightTrackerApp.swift`:
 
 - `WeightEntry` — a single weight measurement: `id`, `date`, `weightKg`
-- `UserSettings` — singleton-pattern record (always use `.first`): `heightMeters`, `goalWeightKg`
+- `UserSettings` — singleton-pattern record (always use `.first`): `heightMeters`, `goalWeightKg`, `notificationsEnabled`, `logDays` (String), `reminderHour`, `reminderMinute`
 
-All weights are stored and displayed in **kg**. Height is stored in **meters**.
+All weights are stored and displayed in **kg**. Height is stored internally in **meters** but entered and displayed in **cm**. `logDays` is stored as a comma-separated string (e.g. `"2,5"`) — use the `logDaysSet: Set<Int>` computed property to read/write it. **Never use `[Int]` or any other collection type as a SwiftData model property** — it breaks automatic schema migration.
 
 ### View layer
 
 ```
 ContentView (TabView)
-├── EntryListView        — @Query-driven list, reverse-sorted by date
+├── EntryListView        — @Query-driven list, reverse-sorted by date; toolbar has + and share log
 │   ├── EntryRowView     — pure display row
 │   └── EntryFormView    — add/edit sheet; nil entry = add, non-nil = edit
+├── StatsView            — owns StatsViewModel (@State), calls update() on appear/change; toolbar has share progress
 ├── ChartsTabView        — owns ChartsViewModel (@State), calls update() on appear/change
 │   ├── GoalProgressView — linear gauge from start→goal using GoalProgressData
 │   ├── WeightLineChart  — Swift Charts line+point, optional goal RuleMark
 │   └── BMIChart         — Swift Charts line+point, dashed category RuleMarks
-└── SettingsView         — reads/writes the single UserSettings record
+└── SettingsView         — reads/writes the single UserSettings record; includes Reminders section
 ```
 
-### ViewModel
+### ViewModels
 
-`ChartsViewModel` (`@Observable`) is a pure transformation layer — it takes `[WeightEntry]` and `UserSettings?` and produces `weightSeries`, `bmiSeries`, and `goalProgress`. `ChartsTabView` drives it by calling `update()` in `onAppear` and `onChange`.
+Both follow the same pattern — `@Observable` class, `update(entries:settings:)` method, driven by `onAppear`/`onChange` in the owning view:
+
+- `ChartsViewModel` — produces `weightSeries`, `bmiSeries`, `goalProgress`
+- `StatsViewModel` — produces 7-day and 6-week rolling averages for weight and BMI, kg/week rate of change for each window, total change from first entry, and projected goal date
 
 ### Utilities
 
-Free functions in `Calculations.swift` (`bmi`, `bmiCategory`, `goalPercent`) and a `Date.formatted_medium` extension in `DateHelpers.swift`. These have no SwiftUI or SwiftData dependencies and are straightforward to unit test if a test target is ever added.
+- `Calculations.swift` — free functions: `bmi`, `bmiCategory`, `goalPercent`
+- `DateHelpers.swift` — `Date.formatted_medium` extension
+- `NotificationScheduler.swift` — free functions wrapping `UNUserNotificationCenter`: `requestNotificationPermission()`, `scheduleReminders(logDays:hour:minute:)`, `cancelTodayReminder()`, `removeAllReminders()`. `EntryFormView` calls `cancelTodayReminder()` on every save so the reminder doesn't fire on a day the user already logged.
 
 ## App Store
 
