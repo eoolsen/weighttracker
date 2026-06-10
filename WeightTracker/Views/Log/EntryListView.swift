@@ -43,18 +43,18 @@ struct EntryListView: View {
             }
             .navigationTitle("Weight Log")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    ShareLink(item: shareText) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .disabled(entries.isEmpty)
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showingAddSheet = true
                     } label: {
                         Image(systemName: "plus")
                     }
-                }
-                ToolbarItem(placement: .secondaryAction) {
-                    ShareLink(item: shareText) {
-                        Label("Share Log", systemImage: "square.and.arrow.up")
-                    }
-                    .disabled(entries.isEmpty)
                 }
             }
             .sheet(isPresented: $showingAddSheet) {
