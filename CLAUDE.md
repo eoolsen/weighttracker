@@ -25,9 +25,9 @@ SwiftUI + SwiftData app with four tabs (Log, Stats, Charts, Settings). All data 
 Two `@Model` classes persisted by SwiftData, registered in `WeightTrackerApp.swift`:
 
 - `WeightEntry` — a single weight measurement: `id`, `date`, `weightKg`
-- `UserSettings` — singleton-pattern record (always use `.first`): `heightMeters`, `goalWeightKg`, `notificationsEnabled`, `logDays` (String), `reminderHour`, `reminderMinute`
+- `UserSettings` — singleton-pattern record (always use `.first`): `heightMeters`, `goalWeightKg`
 
-All weights are stored and displayed in **kg**. Height is stored internally in **meters** but entered and displayed in **cm**. `logDays` is stored as a comma-separated string (e.g. `"2,5"`) — use the `logDaysSet: Set<Int>` computed property to read/write it. **Never use `[Int]` or any other collection type as a SwiftData model property** — it breaks automatic schema migration.
+All weights are stored and displayed in **kg**. Height is stored internally in **meters** but entered and displayed in **cm**. **Never use `[Int]` or any other collection type as a SwiftData model property** — it breaks automatic schema migration.
 
 ### View layer
 
@@ -41,7 +41,7 @@ ContentView (TabView)
 │   ├── GoalProgressView — linear gauge from start→goal using GoalProgressData
 │   ├── WeightLineChart  — Swift Charts line+point, optional goal RuleMark
 │   └── BMIChart         — Swift Charts line+point, dashed category RuleMarks
-└── SettingsView         — reads/writes the single UserSettings record; includes Reminders section
+└── SettingsView         — reads/writes the single UserSettings record
 ```
 
 ### ViewModels
@@ -55,7 +55,6 @@ Both follow the same pattern — `@Observable` class, `update(entries:settings:)
 
 - `Calculations.swift` — free functions: `bmi`, `bmiCategory`, `goalPercent`
 - `DateHelpers.swift` — `Date.formatted_medium` extension
-- `NotificationScheduler.swift` — free functions wrapping `UNUserNotificationCenter`: `requestNotificationPermission()`, `scheduleReminders(logDays:hour:minute:)`, `cancelTodayReminder()`, `removeAllReminders()`. `EntryFormView` calls `cancelTodayReminder()` on every save so the reminder doesn't fire on a day the user already logged.
 
 ## App Store
 

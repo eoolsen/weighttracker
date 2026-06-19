@@ -11,7 +11,7 @@ struct EntryListView: View {
 
     private var shareText: String {
         let sorted = entries.sorted { $0.date < $1.date }
-        let rows = sorted.map { "\($0.date.formatted_medium)\t\(String(format: "%.1f kg", $0.weightKg))" }
+        let rows = sorted.map { "\($0.date.mediumDate)\t\($0.weightKg.kgString)" }
         return (["weighttracker.io — Weight Log", ""] + rows).joined(separator: "\n")
     }
 
@@ -63,23 +63,19 @@ struct EntryListView: View {
             .sheet(item: $selectedEntry) { entry in
                 EntryFormView(entry: entry)
             }
-            .alert(
-                "Delete Entry?",
+            .confirmationDialog(
+                "Delete this entry?",
                 isPresented: .init(
                     get: { entryToDelete != nil },
                     set: { if !$0 { entryToDelete = nil } }
                 ),
                 presenting: entryToDelete
             ) { entry in
-                Button("Delete", role: .destructive) {
+                Button("Delete \(entry.date.mediumDate) — \(entry.weightKg.kgString)", role: .destructive) {
                     modelContext.delete(entry)
                     entryToDelete = nil
                 }
-                Button("Cancel", role: .cancel) {
-                    entryToDelete = nil
-                }
-            } message: { entry in
-                Text("\(entry.date.formatted_medium) — \(String(format: "%.1f kg", entry.weightKg))")
+                Button("Cancel", role: .cancel) { entryToDelete = nil }
             }
         }
     }

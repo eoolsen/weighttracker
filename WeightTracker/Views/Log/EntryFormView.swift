@@ -5,16 +5,22 @@ struct EntryFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    // Pass an existing entry to edit it; nil means "add new"
-    var entry: WeightEntry?
+    private let entry: WeightEntry?
 
-    @State private var date: Date = .now
-    @State private var weightText: String = ""
+    @State private var date: Date
+    @State private var weightText: String
     @State private var showError = false
 
     @FocusState private var weightFocused: Bool
 
-    var isEditing: Bool { entry != nil }
+    init(entry: WeightEntry? = nil) {
+        self.entry = entry
+        _date = State(initialValue: entry?.date ?? .now)
+        _weightText = State(initialValue: entry.map { String(format: "%.1f", $0.weightKg) } ?? "")
+    }
+
+    private var isEditing: Bool { entry != nil }
+    private var hasInput: Bool { !weightText.trimmingCharacters(in: .whitespaces).isEmpty }
 
     var body: some View {
         NavigationStack {
@@ -35,33 +41,20 @@ struct EntryFormView: View {
                             .foregroundStyle(.red)
                     }
                 }
-
-                Section {
-                    HStack(spacing: 12) {
-                        Button(action: { dismiss() }) {
-                            Text("Cancel")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(.red)
-
-                        Button(action: save) {
-                            Text("Save")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(weightText.trimmingCharacters(in: .whitespaces).isEmpty)
-                    }
-                }
             }
             .navigationTitle(isEditing ? "Edit Entry" : "Add Entry")
             .navigationBarTitleDisplayMode(.inline)
-
-            .onAppear {
-                if let entry {
-                    date = entry.date
-                    weightText = String(format: "%.1f", entry.weightKg)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel", role: .cancel) { dismiss() }
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Save", action: save)
+                        .disabled(!hasInput)
+                }
+            }
+            .onChange(of: weightText) { _, _ in
+                if showError { showError = false }
             }
         }
     }
@@ -77,10 +70,8 @@ struct EntryFormView: View {
             entry.date = date
             entry.weightKg = kg
         } else {
-            let newEntry = WeightEntry(date: date, weightKg: kg)
-            modelContext.insert(newEntry)
+            modelContext.insert(WeightEntry(date: date, weightKg: kg))
         }
-        cancelTodayReminder()
         dismiss()
     }
 }

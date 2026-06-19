@@ -5,10 +5,10 @@ struct EntryRowView: View {
 
     var body: some View {
         HStack {
-            Text(entry.date.formatted_medium)
+            Text(entry.date.mediumDate)
                 .foregroundStyle(.secondary)
             Spacer()
-            Text(String(format: "%.1f kg", entry.weightKg))
+            Text(entry.weightKg.kgString)
                 .bold()
         }
     }

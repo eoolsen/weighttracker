@@ -11,22 +11,7 @@ struct SettingsView: View {
     @FocusState private var focusedField: Field?
     private enum Field { case height, goal }
 
-    // Notification UI state
-    @State private var notificationsEnabled: Bool = false
-    @State private var logDays: Set<Int> = []
-    @State private var reminderTime: Date = defaultReminderTime()
-    @State private var notificationsDenied = false
-
     private var settings: UserSettings? { settingsRecords.first }
-
-    private static func defaultReminderTime() -> Date {
-        var c = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-        c.hour = 22; c.minute = 0
-        return Calendar.current.date(from: c) ?? .now
-    }
-
-    // Abbreviated weekday labels, Sun=1 … Sat=7
-    private let weekdayLabels = ["S", "M", "T", "W", "T", "F", "S"]
 
     var body: some View {
         NavigationStack {
@@ -48,41 +33,6 @@ struct SettingsView: View {
                             .focused($focusedField, equals: .goal)
                         Text("kg")
                             .foregroundStyle(.secondary)
-                    }
-                }
-
-                Section("Reminders") {
-                    Toggle("Weigh-in reminders", isOn: $notificationsEnabled)
-                        .onChange(of: notificationsEnabled) { handleNotificationToggle() }
-
-                    if notificationsDenied {
-                        Text("Enable notifications in Settings → Notifications → weighttracker.io")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if notificationsEnabled {
-                        HStack(spacing: 0) {
-                            ForEach(1...7, id: \.self) { day in
-                                let selected = logDays.contains(day)
-                                Button {
-                                    if selected { logDays.remove(day) } else { logDays.insert(day) }
-                                    saveNotificationSettings()
-                                } label: {
-                                    Text(weekdayLabels[day - 1])
-                                        .font(.subheadline.bold())
-                                        .frame(maxWidth: .infinity, minHeight: 36)
-                                        .background(selected ? Color.accentColor : Color.clear)
-                                        .foregroundStyle(selected ? .white : .primary)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.3)))
-
-                        DatePicker("Reminder time", selection: $reminderTime, displayedComponents: .hourAndMinute)
-                            .onChange(of: reminderTime) { saveNotificationSettings() }
                     }
                 }
 
@@ -115,67 +65,17 @@ struct SettingsView: View {
         if let s = settings {
             heightText = String(format: "%.0f", s.heightMeters * 100)
             goalText = String(format: "%.1f", s.goalWeightKg)
-            notificationsEnabled = s.notificationsEnabled
-            logDays = s.logDaysSet
-            var c = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-            c.hour = s.reminderHour; c.minute = s.reminderMinute
-            reminderTime = Calendar.current.date(from: c) ?? reminderTime
         }
     }
 
     private func save() {
         focusedField = nil
         guard let hCm = parseDouble(heightText), let g = parseDouble(goalText) else { return }
-        let h = hCm / 100
-        if let existing = settings {
-            existing.heightMeters = h
-            existing.goalWeightKg = g
-        } else {
-            let hour = Calendar.current.component(.hour, from: reminderTime)
-            let minute = Calendar.current.component(.minute, from: reminderTime)
-            let newSettings = UserSettings(
-                heightMeters: h,
-                goalWeightKg: g,
-                notificationsEnabled: notificationsEnabled,
-                reminderHour: hour,
-                reminderMinute: minute
-            )
-            newSettings.logDaysSet = logDays
-            modelContext.insert(newSettings)
-        }
+        let row = UserSettings.resolved(in: modelContext)
+        row.heightMeters = hCm / 100
+        row.goalWeightKg = g
         saved = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saved = false }
-    }
-
-    private func handleNotificationToggle() {
-        guard notificationsEnabled else {
-            settings?.notificationsEnabled = false
-            removeAllReminders()
-            return
-        }
-        Task {
-            let granted = await requestNotificationPermission()
-            await MainActor.run {
-                if granted {
-                    notificationsDenied = false
-                    settings?.notificationsEnabled = true
-                    saveNotificationSettings()
-                } else {
-                    notificationsEnabled = false
-                    notificationsDenied = true
-                }
-            }
-        }
-    }
-
-    private func saveNotificationSettings() {
-        guard let s = settings else { return }
-        s.logDaysSet = logDays
-        s.reminderHour = Calendar.current.component(.hour, from: reminderTime)
-        s.reminderMinute = Calendar.current.component(.minute, from: reminderTime)
-        if notificationsEnabled {
-            scheduleReminders(logDays: Array(logDays), hour: s.reminderHour, minute: s.reminderMinute)
-        }
     }
 
     private func parseDouble(_ text: String) -> Double? {

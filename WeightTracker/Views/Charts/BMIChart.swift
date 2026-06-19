@@ -68,7 +68,7 @@ struct BMIChart: View {
                     HStack {
                         Text(String(format: "Current BMI: %.1f", latest.bmiValue))
                             .font(.subheadline)
-                        Text("(\(bmiCategory(latest.bmiValue)))")
+                        Text("(\(BMI.category(latest.bmiValue)))")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }

@@ -37,9 +37,10 @@ struct GoalProgressView: View {
 
                     let remaining = data.goalKg - data.currentKg
                     if abs(remaining) > 0.05 {
+                        let movingAway = (data.goalKg - data.startKg) * (data.currentKg - data.startKg) < 0
                         Text(String(format: "%+.1f kg to goal", remaining))
                             .font(.subheadline)
-                            .foregroundStyle(remaining > 0 ? .blue : .orange)
+                            .foregroundStyle(movingAway ? .orange : .secondary)
                     } else {
                         Label("Goal reached!", systemImage: "star.fill")
                             .foregroundStyle(.yellow)
@@ -58,7 +59,7 @@ struct GoalProgressView: View {
 
     private func statLabel(_ title: String, value: Double) -> some View {
         VStack(spacing: 2) {
-            Text(String(format: "%.1f kg", value))
+            Text(value.kgString)
                 .bold()
             Text(title)
                 .font(.caption)
